@@ -88,7 +88,7 @@ class NeoPixel:
                 self.brightness = 1.0
             elif self.brightness < 0.0:
                 self.brightness = 0.0
-            self.buffer[key] = value
+            self.buffer[key] = [tuple(color) for color in value]
             if self.autowrite:
                 self.show()
 
