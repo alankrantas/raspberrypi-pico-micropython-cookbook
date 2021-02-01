@@ -83,14 +83,11 @@ class NeoPixel:
     def __setitem__(self, key, value):
         if isinstance(key, int):
             self[key:key+1] = [value]
-        else:
+        elif isinstance(key, slice):
             if self.brightness > 1.0:
                 self.brightness = 1.0
             elif self.brightness < 0.0:
                 self.brightness = 0.0
-            for i, color in enumerate(value):
-                r, g, b = color[0], color[1], color[2]
-                value[i] = tuple([r, g, b])
             self.buffer[key] = value
             if self.autowrite:
                 self.show()
