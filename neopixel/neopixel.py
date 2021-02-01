@@ -87,7 +87,7 @@ class NeoPixel:
         if isinstance(key, int):
             self[key:key+1] = [value]
         elif isinstance(key, slice):
-            self.buffer[key] = [tuple(color) for color in value if len(color) == 3]
+            self.buffer[key] = [tuple(color) for color in value]
             if self.autowrite:
                 self.show()
 
