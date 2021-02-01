@@ -40,6 +40,11 @@ def _wheel(pos):
     return (pos * 3, 0, 255 - pos * 3)
 
 
+# for limiting a value between an interval
+def _between(value, minV, maxV):
+    return max(min(value, maxV), minV)
+
+
 class NeoPixel:
     """
     NeoPixel (WS2812) driver class.
@@ -59,8 +64,7 @@ class NeoPixel:
         Percentage of brightness level (0.0~1.0, default 1.0)
     
     autowrite : bool
-        Automatically call .show() whenever buffer is changed
-        (default False)
+        Automatically call .show() whenever buffer is changed (default False)
     """
     
     __slot__ = ['pin', 'n', 'brightness', 'autowrite', 'buffer', 'sm']
@@ -72,8 +76,7 @@ class NeoPixel:
         self.autowrite = autowrite
         self.sm = rp2.StateMachine(0, _ws2812, freq=8_000_000, sideset_base=self.pin)
         self.sm.active(1)
-        self.buffer = [0] * self.n
-        self.fill((0, 0, 0))
+        self.buffer = [(0, 0, 0)] * self.n
         if not self.autowrite:
             self.show()
 
@@ -84,11 +87,7 @@ class NeoPixel:
         if isinstance(key, int):
             self[key:key+1] = [value]
         elif isinstance(key, slice):
-            if self.brightness > 1.0:
-                self.brightness = 1.0
-            elif self.brightness < 0.0:
-                self.brightness = 0.0
-            self.buffer[key] = [tuple(color) for color in value]
+            self.buffer[key] = [tuple(color) for color in value if len(color) == 3]
             if self.autowrite:
                 self.show()
 
@@ -135,7 +134,7 @@ class NeoPixel:
         Parameters
         --------------------
         clockwise : bool
-            Rotate counterwise (False = counter-clockwise)
+            Rotate counterwise (Default True; False = counter-clockwise)
         """
         self[:] = self[-1:] + self[:-1] if clockwise else self[1:] + self[:1]
         if self.autowrite:
@@ -143,14 +142,15 @@ class NeoPixel:
 
     def show(self):
         """
-        Write buffer to leds.
+        Write buffer to leds via state machine.
         """
+        self.brightness = _between(self.brightness, 0.0, 1.0)
         uint16_arr = array.array('I', [0] * len(self.buffer))
         for i, color in enumerate(self.buffer):
             r, g, b = color[0], color[1], color[2]
-            r = round(r * self.brightness)
-            g = round(g * self.brightness)
-            b = round(b * self.brightness)
+            r = _between(round(r * self.brightness), 0, 255)
+            g = _between(round(g * self.brightness), 0, 255)
+            b = _between(round(b * self.brightness), 0, 255)
             uint16_arr[i] = (g << 16) | (r << 8) | b
         self.sm.put(uint16_arr, 8)
 
