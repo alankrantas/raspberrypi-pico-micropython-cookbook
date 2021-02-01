@@ -25,7 +25,7 @@ Timer().init(mode=Timer.PERIODIC, period=500,
 
 ## NeoPIxel (WS2812) driver
 
-This is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/blob/master/pio/neopixel_ring/neopixel_ring.py), repackaged into a class similar to CircuitPython's NeoPixel driver.
+This is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/tree/master/pio/neopixel_ring), repackaged into a class similar to CircuitPython's NeoPixel driver.
 
 * [neopixel.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/neopixel/neopixel.py): the driver (contains test code so you can run this directly as well)
 * [neopixel_test.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/neopixel/neopixel_test.py): test code (this is how you use it after uploaded the driver)
