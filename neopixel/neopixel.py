@@ -12,9 +12,7 @@ import rp2, array
 
 
 # for programmable pin state machine
-@rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW,
-             out_shiftdir=rp2.PIO.SHIFT_LEFT,
-             autopull=True, pull_thresh=24)
+@rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
 def _ws2812():
     T1 = 2
     T2 = 5
@@ -43,7 +41,6 @@ def _wheel(pos):
 
 
 class NeoPixel:
-    
     """
     NeoPixel (WS2812) driver class.
     
@@ -69,25 +66,21 @@ class NeoPixel:
     __slot__ = ['pin', 'n', 'brightness', 'autowrite', 'data', 'sm']
     
     def __init__(self, pin, n=1, brightness=1.0, autowrite=False):
-        
         self.pin = Pin(pin, Pin.OUT)
         self.n = n
         self.buffer = [0] * self.n
         self.brightness = brightness
         self.autowrite = autowrite
-        self.sm = rp2.StateMachine(0, _ws2812, freq=8_000_000,
-                                   sideset_base=self.pin)
+        self.sm = rp2.StateMachine(0, _ws2812, freq=8_000_000, sideset_base=self.pin)
         self.sm.active(1)
         self.fill((0, 0, 0))
         if not self.autowrite:
             self.show()
 
     def __getitem__(self, key):
-        
         return self.buffer[key]
 
     def __setitem__(self, key, value):
-        
         if isinstance(key, int):
             self[key:key+1] = [value]
         else:
@@ -103,12 +96,10 @@ class NeoPixel:
                 self.show()
 
     def __len__(self):
-        
         self.n = len(self.buffer)
         return self.n
 
     def fill(self, color):
-        
         """
         Fill a specific color to all leds.
         
@@ -117,21 +108,17 @@ class NeoPixel:
         color : list or tuple
             (r, g, b)
         """
-        
         self[:] = [color] * len(self.buffer)
         if self.autowrite:
             self.show()
     
     def clear(self):
-        
         """
         Clear all leds.
         """
-        
         self.fill((0, 0, 0))
 
     def rainbow_cycle(self, cycle=0):
-        
         """
         Set rainbow colors accross all leds.
         
@@ -140,14 +127,11 @@ class NeoPixel:
         cycle : int
             Cycle (0~255) of rainbow colors (default 0)
         """
-        
-        self[:] = [_wheel((round(i * 255 / len(self.buffer)) + cycle) & 255)
-                   for i in range(len(self.buffer))]
+        self[:] = [_wheel((round(i * 255 / len(self.buffer)) + cycle) & 255) for i in range(len(self.buffer))]
         if self.autowrite:
             self.show()
             
     def rotate(self, clockwise=True):
-        
         """
         Rotate current buffer clockwise or counter-clockwise.
         
@@ -156,18 +140,14 @@ class NeoPixel:
         clockwise : bool
             Rotate counterwise (False = counter-clockwise)
         """
-        
-        self[:] = self[-1:] + self[:-1] if clockwise else \
-                  self[1:] + self[:1]
+        self[:] = self[-1:] + self[:-1] if clockwise else self[1:] + self[:1]
         if self.autowrite:
             self.show()
 
     def show(self):
-        
         """
         Write buffer to leds.
         """
-        
         uint16_arr = array.array('I', [0] * len(self.buffer))
         for i, color in enumerate(self.buffer):
             r, g, b = color[0], color[1], color[2]
