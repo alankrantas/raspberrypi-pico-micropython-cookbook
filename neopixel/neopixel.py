@@ -63,16 +63,16 @@ class NeoPixel:
         (default False)
     """
     
-    __slot__ = ['pin', 'n', 'brightness', 'autowrite', 'data', 'sm']
+    __slot__ = ['pin', 'n', 'brightness', 'autowrite', 'buffer', 'sm']
     
     def __init__(self, pin, n=1, brightness=1.0, autowrite=False):
         self.pin = Pin(pin, Pin.OUT)
         self.n = n
-        self.buffer = [0] * self.n
         self.brightness = brightness
         self.autowrite = autowrite
         self.sm = rp2.StateMachine(0, _ws2812, freq=8_000_000, sideset_base=self.pin)
         self.sm.active(1)
+        self.buffer = [0] * self.n
         self.fill((0, 0, 0))
         if not self.autowrite:
             self.show()
