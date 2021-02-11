@@ -25,6 +25,27 @@ Timer().init(mode=Timer.PERIODIC, period=500,
              callback=lambda _: Pin(25, Pin.OUT).toggle())
 ```
 
+## SSD1306 OLED
+
+Use this driver here (which is the same as the one in ESP ports):
+
+https://github.com/stlehmann/micropython-ssd1306
+
+```python
+from machine import Pin, SoftI2C
+from ssd1306 import SSD1306_I2C
+
+i2c = SoftI2C(scl=Pin(21), sda=Pin(20), freq=400000)  # use any two pins
+
+display = SSD1306_I2C(128, 64, i2c)
+
+display.fill(0)
+display.text('Raspberry Pi', 0, 8, 1)
+display.text('Pico!', 0, 16, 1)
+display.show()
+
+```
+
 ## NeoPIxel (WS2812) driver
 
 This is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/tree/master/pio/neopixel_ring), repackaged into a class similar to CircuitPython's NeoPixel driver.
@@ -33,6 +54,10 @@ This is based on [the official PIO example](https://github.com/raspberrypi/pico-
 * [neopixel_test.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/neopixel/neopixel_test.py): test code (this is how you use it after uploaded the driver)
 
 In the Thonny IDE open neopixel.py and go to File -> Save copy... -> Raspberry Pi Pico (note: the device has to be connected first). Save the driver as neopixel.py in Pico.
+
+## Threads on dual cores
+
+[threads.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/threads.py) is a simple example of how to run two tasks simultaneously on both of RP2040's cores. 
 
 ## Links
 
