@@ -29,7 +29,7 @@ def task(task_id, is_thread):
         You can also use this if you only need to do things in core 1,
         which automatically calls acquire()/release():
         
-        with is_thread:
+        with thread_lock:
             # process data in core 1
         '''
         
