@@ -2,60 +2,50 @@
 
 
 from _thread import start_new_thread, allocate_lock
-import random, time
+import _thread, random, time
 
 
-data = [x for x in range(20)]  # data to be processed
+data = [random.randint(1, 100) for x in range(10)]  # data to be processed
 
-thread_started = False
-thread_counter = 0
 
-thread_lock = allocate_lock()  # lock resources for core 1
+thread_finished = False
+lock = allocate_lock()
 
-# thread task to be used by both cores
-def task(task_id, is_thread):
-    global thread_started, thread_counter
-    
-    if not thread_started:
-        if is_thread:
-            thread_started = True  # get core 1 ready
-            time.sleep(1)
-        else:
-            while not thread_started:  # core 0 waits for core 1 ready
-                pass
+
+def task(is_thread):   
+    global thread_finished
     
     while True:
-        '''
-        You can also use this if you only need to do things in core 1,
-        which automatically calls acquire()/release():
-        
-        with thread_lock:
-            # process data in core 1
-        '''
-        
-        if is_thread:
-            thread_lock.acquire()
+
+        try:
+            with lock:
+                d = data.pop()
+            '''
+            You can also use
+                lock.acquire()
+            and
+                ock.release()
+            '''
+        except:
+            if not data:
+                break
             
-        if data:
-            thread_counter += 1
-            d = data.pop()
-        else:
-            break
+        print('Thread (id: {}) processing: {}'.format(
+            _thread.get_ident(), d))
         
-        print('Thread {} processing: {} (counting: {})'.format(
-            task_id, d, thread_counter))
         # simulate data processing time
-        time.sleep(round(random.uniform(0.1, 0.5), 2))
-        
-        if is_thread:
-            thread_lock.release()
+        time.sleep(round(random.uniform(0.1, 0.3), 2))
     
-    print('Thread {} ends'.format(task_id))
+    print('Thread (id: {}) ends'.format(_thread.get_ident()))
     if is_thread:
-        thread_lock.release()
+        # signal that task on core 1 is finished
+        with lock:
+            thread_finished = True
+        _thread.exit()
 
 
-start_new_thread(task,(1, True))  # run task on core 1
-task(0, False)                    # run task on core 0
+start_new_thread(task, (True, ))  # run task on core 1
+task(False)                       # run task on core 0
 
-time.sleep(1)
+while not thread_finished:  # wait for task on core 1
+    pass
