@@ -24,7 +24,8 @@ def task(is_thread):
             You can also use
                 lock.acquire()
             and
-                ock.release()
+                lock.release()
+            around the shared resources.
             '''
         except:
             if not data:
