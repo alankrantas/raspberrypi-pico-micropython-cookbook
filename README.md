@@ -35,8 +35,7 @@ https://github.com/stlehmann/micropython-ssd1306
 from machine import Pin, SoftI2C
 from ssd1306 import SSD1306_I2C
 
-i2c = SoftI2C(scl=Pin(21), sda=Pin(20), freq=400000)  # use any two pins
-
+i2c = SoftI2C(scl=Pin(27), sda=Pin(26), freq=400000)  # sofeware I2C
 display = SSD1306_I2C(128, 64, i2c)
 
 display.fill(0)
@@ -44,6 +43,16 @@ display.text('Raspberry Pi', 0, 8, 1)
 display.text('Pico!', 0, 16, 1)
 display.show()
 
+```
+
+Or:
+
+```python
+from machine import Pin, I2C
+from ssd1306 import SSD1306_I2C
+
+i2c = I2C(1, scl=Pin(27), sda=Pin(26), freq=400000)  # hardware I2C
+display = SSD1306_I2C(128, 64, i2c)
 ```
 
 ## NeoPIxel (WS2812) driver
