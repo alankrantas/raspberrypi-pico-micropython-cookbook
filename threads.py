@@ -1,25 +1,25 @@
 # Processing data on RPi Pico RP2040's dual cores
 
-
-from _thread import start_new_thread, allocate_lock
 import _thread, random, time
 
 
-data = [random.randint(1, 100) for x in range(10)]  # data to be processed
+# data to be processed
+task = [random.randint(1, 100) for x in range(10)]
+
+# lock for shared resources
+lock = _thread.allocate_lock()
+
+task_done = False
 
 
-thread_finished = False
-lock = allocate_lock()
+def worker(worker_id, is_thread):
+    global task_done
 
-
-def task(is_thread):   
-    global thread_finished
-    
-    while True:
+    while task:
 
         try:
             with lock:
-                d = data.pop()
+                d = task.pop()  # retrieve available task
             '''
             You can also use
                 lock.acquire()
@@ -28,25 +28,22 @@ def task(is_thread):
             around the shared resources.
             '''
         except:
-            if not data:
-                break
-            
-        print('Thread (id: {}) processing: {}'.format(
-            _thread.get_ident(), d))
+            break
+        
+        # process data
+        print('Thread {} processing: {}'.format(worker_id, d))
         
         # simulate data processing time
-        time.sleep(round(random.uniform(0.1, 0.3), 2))
+        time.sleep(round(random.uniform(0.1, 0.5), 2))
     
-    print('Thread (id: {}) ends'.format(_thread.get_ident()))
+    print('Thread {} ends'.format(worker_id))
     if is_thread:
-        # signal that task on core 1 is finished
-        with lock:
-            thread_finished = True
-        _thread.exit()
+        task_done = True
+        _thread.exit()  # exit thread on core 1
 
 
-start_new_thread(task, (True, ))  # run task on core 1
-task(False)                       # run task on core 0
+_thread.start_new_thread(worker, (1, True))  # process task on core 1
+worker(0, False)                             # process task on core 0
 
-while not thread_finished:  # wait for task on core 1
+while not task_done:  # wait for core 1 finished tasks
     pass
