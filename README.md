@@ -66,7 +66,9 @@ In the Thonny IDE open neopixel.py and go to File -> Save copy... -> Raspberry P
 
 ## Threads on dual cores
 
-[threads.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/threads.py) is a simple example of how to run two tasks simultaneously on both of RP2040's cores. 
+[threads.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/threads.py) is a simple example of how to run two tasks simultaneously on both of RP2040's cores.
+
+There's also two versions of [Conway's Game of Life](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/tree/main/game-of-life) with OLED display, with or without utilizing dual cores.
 
 ## Links
 
