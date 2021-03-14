@@ -60,8 +60,7 @@ def calculate_cells(is_thread):
                 with lock:
                     buffer[i] = 1
     if is_thread:
-        with lock:
-            thread_done = True
+        thread_done = True
         _thread.exit()
 
 
@@ -78,8 +77,7 @@ def draw_cells(is_thread):
                               (i // X) * DOT_SIZE,
                               DOT_SIZE, DOT_SIZE, 1)
     if is_thread:
-        with lock:
-            thread_done = True
+        thread_done = True
         _thread.exit()
 
 gen, start, t = 0, 0, 0
