@@ -74,10 +74,9 @@ def draw_cells(is_thread):
         except:
             break
         if board[i]:
-            with lock:
-                display.fill_rect((i % X) * DOT_SIZE,
-                                  (i // X) * DOT_SIZE,
-                                  DOT_SIZE, DOT_SIZE, 1)
+            display.fill_rect((i % X) * DOT_SIZE,
+                              (i // X) * DOT_SIZE,
+                              DOT_SIZE, DOT_SIZE, 1)
     if is_thread:
         with lock:
             thread_done = True
