@@ -40,7 +40,6 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
 
 
 def calculate_cells(is_thread):
-    global thread_done
     while task:
         try:
             with lock:
@@ -60,12 +59,10 @@ def calculate_cells(is_thread):
                 with lock:
                     buffer[i] = 1
     if is_thread:
-        thread_done = True
         _thread.exit()
 
 
 def draw_cells(is_thread):
-    global thread_done
     while task:
         try:
             with lock:
@@ -77,7 +74,6 @@ def draw_cells(is_thread):
                               (i // X) * DOT_SIZE,
                               DOT_SIZE, DOT_SIZE, 1)
     if is_thread:
-        thread_done = True
         _thread.exit()
 
 gen, start, t = 0, 0, 0
@@ -88,24 +84,22 @@ while True:
     print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
     
     task = list(range(TOTAL))
-    thread_done = False
     
     display.fill(0)
     _thread.start_new_thread(draw_cells, (True, ))
     draw_cells(False)
-    while not thread_done:
+    while task:
         pass
     display.show()
     
     buffer = bytearray([0] * TOTAL)
     task = list(range(TOTAL))
-    thread_done = False
     
     start = utime.ticks_ms()
     
     _thread.start_new_thread(calculate_cells, (True, ))
     calculate_cells(False)
-    while not thread_done:
+    while task:
         pass
     board = buffer
     
