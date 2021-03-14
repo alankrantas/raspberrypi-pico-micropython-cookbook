@@ -23,7 +23,6 @@ TOTAL  = X * Y
 board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
                     for _ in range(TOTAL)])
 buffer = bytearray([])
-task   = []
 gen    = 0
 
 
