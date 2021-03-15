@@ -4,6 +4,27 @@ Here are two versions of [Conway's Game of Life](https://en.wikipedia.org/wiki/C
 
 The game board size can be adjust by setting the dot size to be drawn, however duo to memory limitation, the duo-thread version cannot go smaller than 3x3 dots (42x21 board).
 
+## Parameters
+
+```python
+# Cellular automaton rule: https://en.wikipedia.org/wiki/Life-like_cellular_automaton
+# Here is Conway's rule B3/S23
+BIRTH    = (3, )
+SURVIVAL = (2, 3)
+
+# Size of the OLED
+WIDTH    = const(128)
+HEIGHT   = const(64)
+
+# dot size to be drawn (the bigger the size, the smaller the game board)
+DOT_SIZE = const(3)  # 3x3 pixels
+RAND_PCT = const(25)  # 25% chance cell generation in the initial board
+
+# SCL/SDA pins of the OLED
+SCL_PIN  = const(27)
+SDA_PIN  = const(26)
+```
+
 ### SSD1306 OLED Driver
 
 Use this driver here (which is the same as the one in MicroPython's ESP ports):
