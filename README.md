@@ -29,7 +29,7 @@ Timer().init(mode=Timer.PERIODIC, period=500,
 
 The [NeoPixel driver](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/tree/main/neopixel) is based on the official PIO example, repackaged into a class similar to CircuitPython's NeoPixel driver.
 
-## Threads on dual cores
+## Multicore and Game of Life
 
 [threads.py](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/blob/main/threads.py) is a simple example of how to run two tasks simultaneously on both of RP2040's cores.
 
