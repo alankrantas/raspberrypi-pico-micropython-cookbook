@@ -41,4 +41,4 @@ A 0.96" 128x64 pixels OLED display is used here:
 * SCL -> GPIO 27 (Pin 32)
 * SDA -> GPIO 26 (Pin 31)
 
-The code also use ADC(2) (GPIO 28/Pin 34)'s floating values as the random seed.
+A push button is added between RUN (pin 30) and GND as the reset button. The code also use ADC(2) (GPIO 28/Pin 34)'s floating values as the random seed.
