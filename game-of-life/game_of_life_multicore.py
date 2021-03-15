@@ -33,7 +33,6 @@ display = SSD1306_I2C(WIDTH, HEIGHT,
 display.fill(0)
 display.show()
 
-thread_done = False
 lock = _thread.allocate_lock()
 
 
