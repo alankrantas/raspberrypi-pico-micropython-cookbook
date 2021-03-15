@@ -6,7 +6,7 @@ The driver contains some test code as well (will not run as part of the driver).
 
 In the Thonny IDE open **neopixel.py** and go to **File** -> **Save copy...** -> **Raspberry Pi Pico** (the device has to be connected first). Save the driver as **neopixel.py** in Pico.
 
-## Test Wiring
+## Wiring Examlple
 
 ![pico_neopixel](https://user-images.githubusercontent.com/44191076/111096225-fc939700-8579-11eb-886a-1db53321a151.png)
 
@@ -14,7 +14,9 @@ In the Thonny IDE open **neopixel.py** and go to **File** -> **Save copy...** ->
 * GND -> GND
 * DIN/DI -> GPIO 28 (Pin 34)
 
-If you want to connect more than one NeoPixel strips, connect DOUT/DO to the next strip's DIN/DI, and connect VIN/GND as well. 
+DIN can be any of the pins. If you want to connect more than one NeoPixel strips to the same pin, connect DOUT/DO to the next strip's DIN/DI, and connect VIN/GND as well. 
+
+Each WS2812 LED comsumes about 50 mA at max level. The 3.3V pin on Pico can saftly provide 300 mA.
 
 ## Test Code
 
@@ -22,6 +24,7 @@ If you want to connect more than one NeoPixel strips, connect DOUT/DO to the nex
 from neopixel import NeoPixel # Upload the driver first!
 import time
 
+# a strip of 8 LEDs at GPIO 28, brightness level 30%, do not auto write after any changes
 neo = NeoPixel(28, n=8, brightness=0.3, autowrite=False)
     
 RED = (255, 0, 0)
