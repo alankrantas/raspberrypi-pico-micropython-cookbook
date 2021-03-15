@@ -14,6 +14,8 @@ In the Thonny IDE open **neopixel.py** and go to **File** -> **Save copy...** ->
 * GND -> GND
 * DIN/DI -> GPIO 28 (Pin 34)
 
+A push button is added between RUN (pin 30) and GND as the reset button. 
+
 DIN can be any of the pins. If you want to connect more than one NeoPixel strips to the same pin, connect DOUT/DO to the next strip's DIN/DI, and connect VIN/GND as well. 
 
 Each WS2812 LED comsumes about 50 mA at max level. The 3.3V pin on Pico can saftly provide 300 mA.
