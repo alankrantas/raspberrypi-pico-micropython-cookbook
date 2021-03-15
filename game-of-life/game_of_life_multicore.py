@@ -1,7 +1,8 @@
+import urandom, utime, gc, _thread
 from machine import Pin, ADC, I2C
 from micropython import const
-from ssd1306 import SSD1306_I2C
-import urandom, utime, gc, _thread
+from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
+
 
 gc.enable()
 urandom.seed(sum([ADC(2).read_u16() for _ in range(1000)]))
