@@ -11,40 +11,6 @@ from machine import Pin
 import rp2, array
 
 
-# for programmable pin state machine
-@rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
-def _ws2812():
-    T1 = 2
-    T2 = 5
-    T3 = 3
-    wrap_target()
-    label('bitloop')
-    out(x, 1)               .side(0)    [T3 - 1]
-    jmp(not_x, 'do_zero')   .side(1)    [T1 - 1]
-    jmp('bitloop')          .side(1)    [T2 - 1]
-    label('do_zero')
-    nop()                   .side(0)    [T2 - 1]
-    wrap()
-
-
-# for generating rainbow colors
-def _wheel(pos):
-    if pos < 0 or pos > 255:
-        return (0, 0, 0)
-    if pos < 85:
-        return (255 - pos * 3, pos * 3, 0)
-    if pos < 170:
-        pos -= 85
-        return (0, 255 - pos * 3, pos * 3)
-    pos -= 170
-    return (pos * 3, 0, 255 - pos * 3)
-
-
-# for limiting a value between an interval
-def _between(value, minV, maxV):
-    return max(min(value, maxV), minV)
-
-
 class NeoPixel:
     """
     NeoPixel (WS2812) driver class.
@@ -71,12 +37,11 @@ class NeoPixel:
     
     def __init__(self, pin, n=1, brightness=1.0, autowrite=False):
         self.pin = Pin(pin, Pin.OUT)
-        self.n = n
         self.brightness = brightness
         self.autowrite = autowrite
-        self.sm = rp2.StateMachine(0, _ws2812, freq=8_000_000, sideset_base=self.pin)
+        self.sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=8_000_000, sideset_base=self.pin)
         self.sm.active(1)
-        self.buffer = [(0, 0, 0)] * self.n
+        self.buffer = [(0, 0, 0)] * n
         if not self.autowrite:
             self.show()
 
@@ -92,8 +57,11 @@ class NeoPixel:
                 self.show()
 
     def __len__(self):
-        self.n = len(self.buffer)
-        return self.n
+        return len(self.buffer)
+
+    @property
+    def n(self):
+        return len(self.buffer)
 
     def fill(self, color):
         """
@@ -104,7 +72,7 @@ class NeoPixel:
         color : list or tuple
             (r, g, b)
         """
-        self[:] = [color] * len(self.buffer)
+        self[:] = [color] * self.n
         if self.autowrite:
             self.show()
     
@@ -123,7 +91,7 @@ class NeoPixel:
         cycle : int
             Cycle (0~255) of rainbow colors (default 0)
         """
-        self[:] = [_wheel((round(i * 255 / len(self.buffer)) + cycle) & 255) for i in range(len(self.buffer))]
+        self[:] = [NeoPixel._wheel((round(i * 255 / self.n) + cycle) & 255) for i in range(self.n)]
         if self.autowrite:
             self.show()
             
@@ -144,25 +112,59 @@ class NeoPixel:
         """
         Write buffer to leds via state machine.
         """
-        self.brightness = _between(self.brightness, 0.0, 1.0)
-        uint16_arr = array.array('I', [0] * len(self.buffer))
+        self.brightness = NeoPixel._between(self.brightness, 0.0, 1.0)
+        uint16_arr = array.array('I', [0] * self.n)
         for i, color in enumerate(self.buffer):
             r, g, b = color[0], color[1], color[2]
-            r = _between(round(r * self.brightness), 0, 255)
-            g = _between(round(g * self.brightness), 0, 255)
-            b = _between(round(b * self.brightness), 0, 255)
+            r = NeoPixel._between(round(r * self.brightness), 0, 255)
+            g = NeoPixel._between(round(g * self.brightness), 0, 255)
+            b = NeoPixel._between(round(b * self.brightness), 0, 255)
             uint16_arr[i] = (g << 16) | (r << 8) | b
         self.sm.put(uint16_arr, 8)
+        
+    # for programmable pin state machine
+    @staticmethod
+    @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
+    def _ws2812():
+        T1 = 2
+        T2 = 5
+        T3 = 3
+        wrap_target()
+        label('bitloop')
+        out(x, 1)               .side(0)    [T3 - 1]
+        jmp(not_x, 'do_zero')   .side(1)    [T1 - 1]
+        jmp('bitloop')          .side(1)    [T2 - 1]
+        label('do_zero')
+        nop()                   .side(0)    [T2 - 1]
+        wrap()
+
+    # for generating rainbow colors
+    @staticmethod
+    def _wheel(pos):
+        if pos < 0 or pos > 255:
+            return (0, 0, 0)
+        if pos < 85:
+            return (255 - pos * 3, pos * 3, 0)
+        if pos < 170:
+            pos -= 85
+            return (0, 255 - pos * 3, pos * 3)
+        pos -= 170
+        return (pos * 3, 0, 255 - pos * 3)
+
+    # for limiting a value between an interval
+    @staticmethod
+    def _between(value, minV, maxV):
+        return max(min(value, maxV), minV)
 
 
 # ------------------------------------------------------------
-# Example:
+# Test sample:
 
 if __name__ == '__main__':
     
     import time
     
-    neo = NeoPixel(28, n=8, brightness=0.3, autowrite=False)
+    neo = NeoPixel(28, n=12, brightness=0.3, autowrite=False)
     
     RED = (255, 0, 0)
     YELLOW = (255, 150, 0)
