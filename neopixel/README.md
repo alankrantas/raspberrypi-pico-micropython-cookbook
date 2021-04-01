@@ -26,8 +26,8 @@ Each WS2812 LED comsumes about 50 mA at max level. The 3.3V pin on Pico can saft
 from neopixel import NeoPixel # Upload the driver first!
 import time
 
-# a strip of 8 LEDs at GPIO 28, brightness level 30%, do not auto write after any changes
-neo = NeoPixel(28, n=8, brightness=0.3, autowrite=False)
+# a strip of 12 LEDs at GPIO 28, brightness level 30%, do not auto write after any changes
+neo = NeoPixel(28, n=12, brightness=0.3, autowrite=False)
     
 RED = (255, 0, 0)
 YELLOW = (255, 150, 0)
