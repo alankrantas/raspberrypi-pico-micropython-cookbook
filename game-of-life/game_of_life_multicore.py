@@ -1,4 +1,5 @@
-import urandom, utime, gc, _thread
+import urandom, utime, gc
+from _thread import allocate_lock, start_new_thread, exit
 from machine import Pin, ADC, I2C
 from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
@@ -13,7 +14,7 @@ SURVIVAL = (2, 3)
 WIDTH    = const(128)
 HEIGHT   = const(64)
 DOT_SIZE = const(3)
-RAND_PCT = const(25)
+RAND_PCT = const(25) # %
 SCL_PIN  = const(27)
 SDA_PIN  = const(26)
 
@@ -33,7 +34,7 @@ display = SSD1306_I2C(WIDTH, HEIGHT,
 display.fill(0)
 display.show()
 
-lock = _thread.allocate_lock()
+lock = allocate_lock()
 
 
 print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
@@ -59,7 +60,7 @@ def calculate_cells(is_thread):
                 with lock:
                     buffer[i] = 1
     if is_thread:
-        _thread.exit()
+        exit()
 
 
 def draw_cells(is_thread):
@@ -74,7 +75,7 @@ def draw_cells(is_thread):
                               (i // X) * DOT_SIZE,
                               DOT_SIZE, DOT_SIZE, 1)
     if is_thread:
-        _thread.exit()
+        exit()
 
 gen, start, t = 0, 0, 0
 
@@ -84,9 +85,8 @@ while True:
     print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
     
     task = list(range(TOTAL))
-    
     display.fill(0)
-    _thread.start_new_thread(draw_cells, (True, ))
+    start_new_thread(draw_cells, (True, ))
     draw_cells(False)
     while task:
         pass
@@ -94,13 +94,10 @@ while True:
     
     buffer = bytearray([0] * TOTAL)
     task = list(range(TOTAL))
-    
     start = utime.ticks_ms()
-    
-    _thread.start_new_thread(calculate_cells, (True, ))
+    start_new_thread(calculate_cells, (True, ))
     calculate_cells(False)
     while task:
         pass
     board = buffer
-    
     t = utime.ticks_diff(utime.ticks_ms(), start)
