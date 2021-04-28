@@ -13,7 +13,7 @@ SURVIVAL = (2, 3)
 WIDTH    = const(128)
 HEIGHT   = const(64)
 DOT_SIZE = const(3)
-RAND_PCT = const(25)
+RAND_PCT = const(25) # %
 SCL_PIN  = const(27)
 SDA_PIN  = const(26)
 
@@ -22,7 +22,6 @@ X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
 board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
-buffer = [0 for _ in range(TOTAL)]
 gen    = 0
 
 
@@ -36,24 +35,28 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
     
 
 def calculate_next_gen():
-    global board
+    buffer = [0] * TOTAL
     for i in range(TOTAL):
         group = board[i-1:i+2] + \
                 board[(i-1-X)%TOTAL:(i+2-X)%TOTAL] + \
                 board[(i-1+X)%TOTAL:(i+2+X)%TOTAL]
         cells = sum(group)
         if not board[i]:
-            buffer[i] = 1 if (cells in BIRTH) else 0
+            if cells in BIRTH:
+                buffer[i] = 1
         else:
-            buffer[i] = 1 if ((cells - 1) in SURVIVAL) else 0
+            if (cells - 1) in SURVIVAL:
+                buffer[i] = 1
     board[:] = buffer
 
 
 def display_board():
+    display.fill(0)
     for i in range(TOTAL):
-        display.fill_rect((i % X) * DOT_SIZE,
-                          (i // X) * DOT_SIZE,
-                          DOT_SIZE, DOT_SIZE, board[i])
+        if board[i]:
+            display.fill_rect((i % X) * DOT_SIZE,
+                              (i // X) * DOT_SIZE,
+                              DOT_SIZE, DOT_SIZE, 1)
     display.show()
 
 
