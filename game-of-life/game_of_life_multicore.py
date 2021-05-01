@@ -1,11 +1,12 @@
 import urandom, utime, gc
 from _thread import allocate_lock, start_new_thread, exit
-from machine import Pin, ADC, I2C
+from machine import Pin, ADC, I2C, freq
 from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
 
 
 gc.enable()
+freq(260000000)  # overclock to 260 MHz
 urandom.seed(sum([ADC(2).read_u16() for _ in range(1000)]))
 
 
