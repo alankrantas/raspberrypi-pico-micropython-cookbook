@@ -27,8 +27,8 @@ board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
                     for _ in range(TOTAL)])
 gen    = 0
 
-i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
-display = SSD1306_I2C(WIDTH, HEIGHT, i2c)
+display = SSD1306_I2C(WIDTH, HEIGHT,
+                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN)))
 display.fill(0)
 display.show()
 
