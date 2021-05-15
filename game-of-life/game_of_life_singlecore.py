@@ -4,9 +4,10 @@ from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
 
 
-gc.enable()
 freq(260000000)  # overclock to 260 MHz
-urandom.seed(sum([ADC(2).read_u16() for _ in range(1000)]))
+
+gc.enable()
+urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
 
 
 BIRTH    = (3, )
@@ -22,12 +23,12 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
+board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
+                    for _ in range(TOTAL)])
 gen    = 0
 
-
-display = SSD1306_I2C(WIDTH, HEIGHT,
-                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000))
+i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
+display = SSD1306_I2C(WIDTH, HEIGHT, i2c)
 display.fill(0)
 display.show()
 
@@ -36,7 +37,8 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
     
 
 def calculate_next_gen():
-    buffer = [0] * TOTAL
+    global board
+    buffer = bytearray([0] * TOTAL)
     for i in range(TOTAL):
         group = board[i-1:i+2] + \
                 board[(i-1-X)%TOTAL:(i+2-X)%TOTAL] + \
@@ -48,7 +50,7 @@ def calculate_next_gen():
         else:
             if (cells - 1) in SURVIVAL:
                 buffer[i] = 1
-    board[:] = buffer
+    board = buffer
 
 
 def display_board():
