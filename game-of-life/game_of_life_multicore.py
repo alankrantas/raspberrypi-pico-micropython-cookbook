@@ -5,8 +5,9 @@ from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
 
 
-gc.enable()
 freq(260000000)  # overclock to 260 MHz
+
+gc.enable()
 urandom.seed(sum([ADC(2).read_u16() for _ in range(1000)]))
 
 
@@ -31,7 +32,7 @@ gen    = 0
 
 
 display = SSD1306_I2C(WIDTH, HEIGHT,
-                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000))
+                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN)))
 display.fill(0)
 display.show()
 
@@ -78,6 +79,7 @@ def draw_cells(is_thread):
     if is_thread:
         exit()
 
+
 gen, start, t = 0, 0, 0
 
 while True:
@@ -93,8 +95,8 @@ while True:
         pass
     display.show()
     
-    buffer = bytearray([0] * TOTAL)
     task = list(range(TOTAL))
+    buffer = bytearray([0] * TOTAL)
     start = utime.ticks_ms()
     start_new_thread(calculate_cells, (True, ))
     calculate_cells(False)
