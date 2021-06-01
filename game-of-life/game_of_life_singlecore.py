@@ -10,12 +10,11 @@ gc.enable()
 urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
 
 
-BIRTH    = (3, )
-SURVIVAL = (2, 3)
+RULE     = ((3, ), (2, 3))  # birth/survival: B3/S23
 WIDTH    = const(128)
 HEIGHT   = const(64)
 DOT_SIZE = const(3)
-RAND_PCT = const(25) # %
+RAND_PCT = const(25)  # %
 SCL_PIN  = const(27)
 SDA_PIN  = const(26)
 
@@ -27,8 +26,8 @@ board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
                     for _ in range(TOTAL)])
 gen    = 0
 
-display = SSD1306_I2C(WIDTH, HEIGHT,
-                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN)))
+i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
+display = SSD1306_I2C(WIDTH, HEIGHT, i2c)
 display.fill(0)
 display.show()
 
@@ -38,18 +37,16 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
 
 def calculate_next_gen():
     global board
+    total = 0
     buffer = bytearray([0] * TOTAL)
     for i in range(TOTAL):
-        group = board[i-1:i+2] + \
-                board[(i-1-X)%TOTAL:(i+2-X)%TOTAL] + \
-                board[(i-1+X)%TOTAL:(i+2+X)%TOTAL]
-        cells = sum(group)
-        if not board[i]:
-            if cells in BIRTH:
-                buffer[i] = 1
-        else:
-            if (cells - 1) in SURVIVAL:
-                buffer[i] = 1
+        i1 = (i - 1) if (i % X) - 1 >= 0 else (i - 1) + X
+        i3 = (i + 1) if (i % X) + 1 < X else (i + 1) - X
+        cells = board[i1] + board[i3] + \
+                board[i1 - X] + board[i - X] + board[i3 - X] + \
+                board[(i1+X)%TOTAL] + board[(i+X)%TOTAL] + board[(i3+X)%TOTAL]
+        if cells in RULE[board[i]]:
+            buffer[i] = 1
     board = buffer
 
 
@@ -63,13 +60,14 @@ def display_board():
     display.show()
 
 
-gen, start, t = 0, 0, 0
+t = 0
 
 while True:
+    start = utime.ticks_ms()
+    
     gen += 1
     print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
     display_board()
-
-    start = utime.ticks_ms()
     calculate_next_gen()
+    
     t = utime.ticks_diff(utime.ticks_ms(), start)
