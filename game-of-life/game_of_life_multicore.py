@@ -8,15 +8,14 @@ from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1
 freq(260000000)  # overclock to 260 MHz
 
 gc.enable()
-urandom.seed(sum([ADC(2).read_u16() for _ in range(1000)]))
+urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
 
 
-BIRTH    = (3, )
-SURVIVAL = (2, 3)
+RULE     = ((3, ), (2, 3))  # birth/survival: B3/S23
 WIDTH    = const(128)
 HEIGHT   = const(64)
 DOT_SIZE = const(3)
-RAND_PCT = const(25) # %
+RAND_PCT = const(25)  # %
 SCL_PIN  = const(27)
 SDA_PIN  = const(26)
 
@@ -31,8 +30,8 @@ task   = []
 gen    = 0
 
 
-display = SSD1306_I2C(WIDTH, HEIGHT,
-                      I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN)))
+i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
+display = SSD1306_I2C(WIDTH, HEIGHT, i2c)
 display.fill(0)
 display.show()
 
@@ -49,18 +48,13 @@ def calculate_cells(is_thread):
                 i = task.pop()
         except:
             break
-        group = board[i-1:i+2] + \
-                board[(i-1-X)%TOTAL:(i+2-X)%TOTAL] + \
-                board[(i-1+X)%TOTAL:(i+2+X)%TOTAL]
-        cells = sum(group)
-        if not board[i]:
-            if cells in BIRTH:
-                with lock:
-                    buffer[i] = 1
-        else:
-            if (cells - 1) in SURVIVAL:
-                with lock:
-                    buffer[i] = 1
+        i1 = (i - 1) if (i % X) - 1 >= 0 else (i - 1) + X
+        i3 = (i + 1) if (i % X) + 1 < X else (i + 1) - X
+        cells = board[i1] + board[i3] + \
+                board[i1 - X] + board[i - X] + board[i3 - X] + \
+                board[(i1+X)%TOTAL] + board[(i+X)%TOTAL] + board[(i3+X)%TOTAL]
+        if cells in RULE[board[i]]:
+            buffer[i] = 1
     if is_thread:
         exit()
 
@@ -80,10 +74,11 @@ def draw_cells(is_thread):
         exit()
 
 
-gen, start, t = 0, 0, 0
+t = 0
 
 while True:
-    gc.collect()
+    start = utime.ticks_ms()
+    
     gen += 1
     print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
     
@@ -97,10 +92,10 @@ while True:
     
     task = list(range(TOTAL))
     buffer = bytearray([0] * TOTAL)
-    start = utime.ticks_ms()
     start_new_thread(calculate_cells, (True, ))
     calculate_cells(False)
     while task:
         pass
     board = buffer
+    
     t = utime.ticks_diff(utime.ticks_ms(), start)
