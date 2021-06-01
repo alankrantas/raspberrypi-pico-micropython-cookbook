@@ -37,7 +37,6 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
 
 def calculate_next_gen():
     global board
-    total = 0
     buffer = bytearray([0] * TOTAL)
     for i in range(TOTAL):
         i1 = (i - 1) if (i % X) - 1 >= 0 else (i - 1) + X
