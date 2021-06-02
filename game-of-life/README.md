@@ -7,8 +7,7 @@ Here are two versions of [Conway's Game of Life](https://en.wikipedia.org/wiki/C
 ```python
 # Cellular automaton rule: https://en.wikipedia.org/wiki/Life-like_cellular_automaton
 # Here is Conway's rule B3/S23
-BIRTH    = (3, )
-SURVIVAL = (2, 3)
+RULE     = ((3, ), (2, 3))  # (birth, survival)
 
 # Size of the OLED
 WIDTH    = const(128)
