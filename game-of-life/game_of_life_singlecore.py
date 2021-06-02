@@ -52,9 +52,7 @@ def display_board():
     display.fill(0)
     for i in range(TOTAL):
         if board[i]:
-            display.fill_rect((i % X) * DOT_SIZE,
-                              (i // X) * DOT_SIZE,
-                              DOT_SIZE, DOT_SIZE, 1)
+            display.fill_rect((i % X) * DOT_SIZE, (i // X) * DOT_SIZE, DOT_SIZE, DOT_SIZE, 1)
     display.show()
 
 
