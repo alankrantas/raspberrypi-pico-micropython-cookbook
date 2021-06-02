@@ -22,8 +22,7 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
-                    for _ in range(TOTAL)])
+board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
 gen    = 0
 
 i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
@@ -37,7 +36,7 @@ print('Conway\'s Game of Life: matrix size {} x {}'.format(X, Y))
 
 def calculate_next_gen():
     global board
-    buffer = bytearray([0] * TOTAL)
+    buffer = [0] * TOTAL
     for i in range(TOTAL):
         i1 = (i - 1) if (i % X) - 1 >= 0 else (i - 1) + X
         i3 = (i + 1) if (i % X) + 1 < X else (i + 1) - X
