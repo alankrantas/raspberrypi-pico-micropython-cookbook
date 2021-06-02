@@ -4,7 +4,7 @@ from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
 
 
-freq(260000000)  # overclock to 260 MHz
+freq(270000000)  # overclock to 270 MHz
 
 gc.enable()
 urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
