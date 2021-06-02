@@ -59,14 +59,16 @@ def display_board():
     display.show()
 
 
-t = 0
+t1, t2 = 0, 0
 
 while True:
-    start = utime.ticks_ms()
-    
     gen += 1
-    print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
-    display_board()
-    calculate_next_gen()
+    print('Gen {}: {} cell(s) (board = {} ms, draw = {} ms)'.format(gen, sum(board), t2, t1))
     
-    t = utime.ticks_diff(utime.ticks_ms(), start)
+    start = utime.ticks_ms()
+    display_board()
+    t1 = utime.ticks_diff(utime.ticks_ms(), start)
+    
+    start = utime.ticks_ms()
+    calculate_next_gen()
+    t2 = utime.ticks_diff(utime.ticks_ms(), start)
