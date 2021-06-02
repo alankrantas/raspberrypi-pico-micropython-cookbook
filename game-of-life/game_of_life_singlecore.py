@@ -1,8 +1,9 @@
-import urandom, utime
+import urandom, utime, gc
 from machine import Pin, ADC, I2C, freq
 from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
 
+gc.enable()
 
 freq(270000000)  # overclock to 270 MHz
 urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
@@ -11,7 +12,7 @@ urandom.seed(sum([ADC(2).read_u16() for _ in range(100)]))
 RULE     = ((3, ), (2, 3))  # birth/survival: B3/S23
 WIDTH    = const(128)
 HEIGHT   = const(64)
-DOT_SIZE = const(2)
+DOT_SIZE = const(3)
 RAND_PCT = const(25)  # %
 SCL_PIN  = const(27)
 SDA_PIN  = const(26)
