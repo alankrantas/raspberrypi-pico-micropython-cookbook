@@ -23,8 +23,7 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
-                    for _ in range(TOTAL)]
+board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
 buffer = []
 task   = []
 gen    = 0
