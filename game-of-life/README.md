@@ -1,8 +1,6 @@
 ## Conway's Game of Life on Raspberry Pi Pico - using SSD1306 OLED
 
-Here are two versions of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), use or not use dual cores of the RP2040 processor. The dual-thread version speed is about 70% of the single core version.
-
-The game board size can be adjust by setting the dot size to be drawn, however duo to memory limitation, the duo-thread version cannot go smaller than 3x3 dots (42x21 board).
+Here are two versions of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), either use or not use dual cores of the RP2040 processor (which can be overclocked to 270 MHz). For the game calculation itself, the speed of the multicore version is about 60-70% of the single core version.
 
 ## Parameters
 
@@ -17,7 +15,7 @@ WIDTH    = const(128)
 HEIGHT   = const(64)
 
 # dot size to be drawn (the bigger the size, the smaller the game board)
-DOT_SIZE = const(3)  # 3x3 pixels
+DOT_SIZE = const(3)  # 3x3 pixels (so the board size is 42 x 21)
 RAND_PCT = const(25)  # 25% chance cell generation in the initial board
 
 # SCL/SDA pins of the OLED
