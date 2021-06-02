@@ -23,9 +23,9 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = bytearray([0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
-                    for _ in range(TOTAL)])
-buffer = bytearray([])
+board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1
+                    for _ in range(TOTAL)]
+buffer = []
 task   = []
 gen    = 0
 
@@ -59,43 +59,32 @@ def calculate_cells(is_thread):
         exit()
 
 
-def draw_cells(is_thread):
-    while task:
-        try:
-            with lock:
-                i = task.pop()
-        except:
-            break
+def display_board():
+    display.fill(0)
+    for i in range(TOTAL):
         if board[i]:
             display.fill_rect((i % X) * DOT_SIZE,
                               (i // X) * DOT_SIZE,
                               DOT_SIZE, DOT_SIZE, 1)
-    if is_thread:
-        exit()
+    display.show()
 
 
-t = 0
+t1, t2 = 0, 0
 
 while True:
-    start = utime.ticks_ms()
-    
     gen += 1
-    print('Gen {}: {} cell(s) ({} ms)'.format(gen, sum(board), t))
+    print('Gen {}: {} cell(s) (board = {} ms, draw = {} ms)'.format(gen, sum(board), t2, t1))
     
-    task = list(range(TOTAL))
-    display.fill(0)
-    start_new_thread(draw_cells, (True, ))
-    draw_cells(False)
-    while task:
-        pass
-    display.show()
+    start = utime.ticks_ms()
+    display_board()
+    t1 = utime.ticks_diff(utime.ticks_ms(), start)
     
+    start = utime.ticks_ms()
     task = list(range(TOTAL))
-    buffer = bytearray([0] * TOTAL)
+    buffer = [0] * TOTAL
     start_new_thread(calculate_cells, (True, ))
     calculate_cells(False)
     while task:
         pass
     board = buffer
-    
-    t = utime.ticks_diff(utime.ticks_ms(), start)
+    t2 = utime.ticks_diff(utime.ticks_ms(), start)
