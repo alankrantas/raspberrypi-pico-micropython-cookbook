@@ -126,8 +126,8 @@ class NeoPixel:
     @staticmethod
     @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
     def _ws2812():
-        T1 = 2
-        T2 = 5
+        T1 = 3
+        T2 = 4
         T3 = 3
         wrap_target()
         label('bitloop')
