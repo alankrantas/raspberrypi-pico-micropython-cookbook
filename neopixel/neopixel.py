@@ -8,7 +8,7 @@
 
 
 from machine import Pin
-import rp2, array
+import rp2, array, time
 
 
 class NeoPixel:
@@ -39,7 +39,7 @@ class NeoPixel:
         self.pin = Pin(pin, Pin.OUT)
         self.brightness = brightness
         self.autowrite = autowrite
-        self.sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=8_000_000, sideset_base=self.pin)
+        self.sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=2400000, sideset_base=self.pin)
         self.sm.active(1)
         self.buffer = [(0, 0, 0)] * n
         if not self.autowrite:
@@ -121,21 +121,19 @@ class NeoPixel:
             b = NeoPixel._between(round(b * self.brightness), 0, 255)
             uint16_arr[i] = (g << 16) | (r << 8) | b
         self.sm.put(uint16_arr, 8)
+        time.sleep_us(50)
         
     # for programmable pin state machine
     @staticmethod
     @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
     def _ws2812():
-        T1 = 3
-        T2 = 3
-        T3 = 4
         wrap_target()
         label('bitloop')
-        out(x, 1)               .side(0)    [T3 - 1]
-        jmp(not_x, 'do_zero')   .side(1)    [T1 - 1]
-        jmp('bitloop')          .side(1)    [T2 - 1]
+        out(x, 1)               .side(0)
+        jmp(not_x, 'do_zero')   .side(1)
+        jmp('bitloop')
         label('do_zero')
-        nop()                   .side(0)    [T2 - 1]
+        nop()                   .side(0)
         wrap()
 
     # for generating rainbow colors
