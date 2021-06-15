@@ -33,14 +33,29 @@ class NeoPixel:
         Automatically call .show() whenever buffer is changed (default False)
     """
     
-    __slot__ = ['pin', 'n', 'brightness', 'autowrite', 'buffer', 'sm']
-    
+    __slot__ = ['n', 'brightness', 'autowrite', 'buffer', '_sm']
+
+    # PIO state machine assembly code
+    @staticmethod
+    @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW,
+                 out_shiftdir=rp2.PIO.SHIFT_LEFT,
+                 autopull=True, pull_thresh=24)
+    def _ws2812():
+        wrap_target()
+        label('bitloop')
+        out(x, 1)               .side(0)
+        jmp(not_x, 'do_zero')   .side(1)
+        jmp('bitloop')
+        label('do_zero')
+        nop()                   .side(0)
+        wrap()
+
     def __init__(self, pin, n=1, brightness=1.0, autowrite=False):
-        self.pin = Pin(pin, Pin.OUT)
         self.brightness = brightness
         self.autowrite = autowrite
-        self.sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=2400000, sideset_base=self.pin)
-        self.sm.active(1)
+        self._sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=2400000,
+                                   sideset_base=Pin(pin, Pin.OUT))
+        self._sm.active(1)
         self.buffer = [(0, 0, 0)] * n
         if not self.autowrite:
             self.show()
@@ -50,11 +65,11 @@ class NeoPixel:
 
     def __setitem__(self, key, value):
         if isinstance(key, int):
-            self[key:key+1] = [value]
+            self.buffer[key] = tuple(value)
         elif isinstance(key, slice):
             self.buffer[key] = [tuple(color) for color in value]
-            if self.autowrite:
-                self.show()
+        if self.autowrite:
+            self.show()
 
     def __len__(self):
         return len(self.buffer)
@@ -115,26 +130,14 @@ class NeoPixel:
         self.brightness = NeoPixel._between(self.brightness, 0.0, 1.0)
         uint16_arr = array.array('I', [0] * self.n)
         for i, color in enumerate(self.buffer):
-            r, g, b = color[0], color[1], color[2]
-            r = NeoPixel._between(round(r * self.brightness), 0, 255)
-            g = NeoPixel._between(round(g * self.brightness), 0, 255)
-            b = NeoPixel._between(round(b * self.brightness), 0, 255)
+            if not isinstance(color, tuple) or len(color) != 3:
+                raise ValueError('Incorrect color data:' + str(color))
+            r = NeoPixel._between(round(color[0] * self.brightness), 0, 255)
+            g = NeoPixel._between(round(color[1] * self.brightness), 0, 255)
+            b = NeoPixel._between(round(color[2] * self.brightness), 0, 255)
             uint16_arr[i] = (g << 16) | (r << 8) | b
-        self.sm.put(uint16_arr, 8)
+        self._sm.put(uint16_arr, 8)
         time.sleep_us(50)
-        
-    # for programmable pin state machine
-    @staticmethod
-    @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
-    def _ws2812():
-        wrap_target()
-        label('bitloop')
-        out(x, 1)               .side(0)
-        jmp(not_x, 'do_zero')   .side(1)
-        jmp('bitloop')
-        label('do_zero')
-        nop()                   .side(0)
-        wrap()
 
     # for generating rainbow colors
     @staticmethod
@@ -159,8 +162,6 @@ class NeoPixel:
 # Test sample:
 
 if __name__ == '__main__':
-    
-    import time
     
     neo = NeoPixel(28, n=12, brightness=0.3, autowrite=False)
     
