@@ -25,6 +25,28 @@ Timer().init(mode=Timer.PERIODIC, period=500,
              callback=lambda _: Pin(25, Pin.OUT).toggle())
 ```
 
+or
+
+```python
+import rp2, time
+from machine import Pin
+
+@rp2.asm_pio(out_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_RIGHT, autopull=True, pull_thresh=1)
+def blink():
+    wrap_target()
+    out(pins, 1)
+    wrap()
+    
+sm = rp2.StateMachine(0, blink, out_base=Pin(25))
+sm.active(1)
+
+while True:
+    sm.put(1)
+    time.sleep(0.5)
+    sm.put(0)
+    time.sleep(0.5)
+```
+
 ## NeoPIxel (WS2812) driver
 
 The [NeoPixel driver](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/tree/main/neopixel) is based on the official PIO example, repackaged into a class similar to CircuitPython's NeoPixel driver.
