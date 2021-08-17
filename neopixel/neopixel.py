@@ -31,6 +31,9 @@ class NeoPixel:
     
     autowrite : bool
         Automatically call .show() whenever buffer is changed (default False)
+    
+    statemachine : int
+        State machine id (0~7)
     """
     
     __slot__ = ['n', 'brightness', 'autowrite', 'buffer', '_sm']
@@ -50,11 +53,13 @@ class NeoPixel:
         nop()                   .side(0)
         wrap()
 
-    def __init__(self, pin, n=1, brightness=1.0, autowrite=False):
+    def __init__(self, pin, n=1, brightness=1.0, autowrite=False, statemachine=0):
         self.brightness = brightness
         self.autowrite = autowrite
-        self._sm = rp2.StateMachine(0, NeoPixel._ws2812, freq=2400000,
-                                   sideset_base=Pin(pin, Pin.OUT))
+        self._sm = rp2.StateMachine(statemachine,
+                                    NeoPixel._ws2812,
+                                    freq=2400000,
+                                    sideset_base=Pin(pin, Pin.OUT))
         self._sm.active(1)
         self.buffer = [(0, 0, 0)] * n
         if not self.autowrite:
