@@ -1,4 +1,4 @@
-## NeoPixel (WS2812) Driver
+## NeoPixel (WS2812) PIO Driver
 
 This driver is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/tree/master/pio/neopixel_ring), repackaged into a class similar to CircuitPython's NeoPixel driver.
 
