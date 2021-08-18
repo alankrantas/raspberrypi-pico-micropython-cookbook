@@ -28,28 +28,47 @@ Timer().init(mode=Timer.PERIODIC, period=500,
 or
 
 ```python
-import rp2, time
 from machine import Pin
+import rp2
 
-@rp2.asm_pio(out_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_RIGHT, autopull=True, pull_thresh=1)
+@rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
 def blink():
     wrap_target()
-    out(pins, 1)
+    set(pins, 1)
+    set(x, 24)                [23]
+    label('high_loop')
+    nop()                     [19]
+    jmp(x_dec, 'high_loop')   [18]
+    set(pins, 0)
+    set(x, 24)                [23]
+    label('low_loop')
+    nop()                     [19]
+    jmp(x_dec, 'low_loop')    [18]
     wrap()
     
-sm = rp2.StateMachine(0, blink, out_base=Pin(25))
+sm = rp2.StateMachine(0, blink, freq=2000, set_base=Pin(25))
 sm.active(1)
-
-while True:
-    sm.put(1)
-    time.sleep(0.5)
-    sm.put(0)
-    time.sleep(0.5)
 ```
 
-## NeoPIxel (WS2812) driver
+## Overclocking
+
+The Pico has default frequency of 125 MHz but can be overclocked to **270 MHz** (which uses higher CPU voltage and might be less stable):
+
+```python
+from machine import freq
+
+freq(270000000)
+```
+
+Remember to reset the frequency back to 125000000.
+
+## NeoPIxel (WS2812) PIO Driver
 
 The [NeoPixel driver](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/tree/main/neopixel) is based on the official PIO example, repackaged into a class similar to CircuitPython's NeoPixel driver.
+
+## DHT11/DHT22 PIO Driver
+
+The [DHT driver](https://github.com/alankrantas/raspberrypi-pico-micropython-cookbook/tree/main/dht) is based on [Harry Fairhead & Mike James' DHT22 PIO code](https://www.i-programmer.info/programming/hardware/14572-the-pico-in-micropython-a-pio-driver-for-the-dht22.html?start=2), repackaged into a class similar to MicroPython's dht module on ESP boards.
 
 ## Multicore and Game of Life
 
