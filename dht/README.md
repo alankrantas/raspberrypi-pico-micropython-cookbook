@@ -17,6 +17,8 @@ To use the driver, in the Thonny IDE open **dht.py** and go to **File** -> **Sav
 
 The 3-pin DHT11 and DHT22 modules don't have NC pin and usually has a built-in resistor to pull up the DATA pin.
 
+You can change the data pin to any of the GPIOs.
+
 ## Test Code
 
 ```python
