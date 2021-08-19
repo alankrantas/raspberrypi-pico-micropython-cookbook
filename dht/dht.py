@@ -13,8 +13,8 @@ class DHT:
         
     Parameters
     --------------------
-    pin : machine.Pin
-        GPIO object
+    pin : int
+        GPIO number
     
     model : int
         DHT model (DHT.DHT_11 or DHT.DHT_22)
@@ -50,14 +50,14 @@ class DHT:
         wait(0, pin, 0)
         set(y, 31)
         label('bits')
-        wait(1, pin, 0) [25]
+        wait(1, pin, 0)     [25]
         in_(pins, 1)
         wait(0, pin, 0)
         jmp(y_dec, 'bits')
 
         set(y, 7)
         label('check')
-        wait(1, pin, 0) [25]
+        wait(1, pin, 0)     [25]
         set(pins, 2)
         set(pins, 0)
         in_(pins, 1)
@@ -66,7 +66,7 @@ class DHT:
         push(block)
     
     def __init__(self, pin, model, statemachine=0):
-        self._pin = pin
+        self._pin = Pin(pin)
         self._model = model if model in (DHT.DHT_11, DHT.DHT_22) else DHT.DHT_11
         self._data = 0
         self._humid = 0
@@ -135,8 +135,8 @@ class DHT11(DHT):
     
     Parameters
     --------------------
-    pin : machine.Pin
-        GPIO object
+    pin : int
+        GPIO number
     
     statemachine : int
         State machine id (0~7)
@@ -156,8 +156,8 @@ class DHT22(DHT):
     
     Parameters
     --------------------
-    pin : machine.Pin
-        GPIO object
+    pin : int
+        GPIO number
     
     statemachine : int
         State machine id (0~7)
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     
     import time
     
-    dht = DHT11(Pin(28))
+    dht = DHT22(28)
     
     while True:
     
