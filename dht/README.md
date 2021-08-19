@@ -26,8 +26,8 @@ import time
 from machine import Pin
 from dht import DHT11, DHT22
     
-dht = DHT11(Pin(28))
-# for DHT22, use dht = DHT22(Pin(28))
+dht = DHT11(28)
+# for DHT22, use dht = DHT22(28)
     
 while True:
     
