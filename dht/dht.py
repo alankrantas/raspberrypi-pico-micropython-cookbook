@@ -171,7 +171,7 @@ if __name__ == '__main__':
     
     import time
     
-    dht = DHT22(28)
+    dht = DHT11(28)
     
     while True:
     
