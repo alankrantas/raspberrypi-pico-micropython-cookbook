@@ -18,12 +18,11 @@ class DHT:
     
     model : int
         DHT model (DHT.DHT_11 or DHT.DHT_22)
-
     statemachine : int
         State machine id (0~7)
     """
     
-    __slot__ = ['_pin', '_model', '_humid', '_temp', '_cks', '_statemachine']
+    __slot__ = ['_pin', '_model', '_humid', '_temp', '_cks', '_sm']
     
     DHT_11 = const(0)
     DHT_22 = const(1)
@@ -73,20 +72,18 @@ class DHT:
         self._humid = 0
         self._temp = 0
         self._cks = False
-        self._statemachine = statemachine
-    
+        self._sm = rp2.StateMachine(statemachine, DHT._dht, freq=490196,
+                                    in_base=self._pin, set_base=self._pin, jmp_pin=self._pin)
+        self._sm.active(1)
+        
     def measure(self):
         """
         Query data from DHT sensor and calculate humidity/temperature readings.
         """
-        
-        sm = rp2.StateMachine(self._statemachine, DHT._dht, freq=490196,
-                              in_base=self._pin, set_base=self._pin, jmp_pin=self._pin)
-        sm.active(1)
-        sm.put(9000)
-        data = sm.get()
-        checksum = sm.get() & 0xFF
-        sm.active(0)
+
+        self._sm.put(9000)
+        data = self._sm.get()
+        checksum = self._sm.get() & 0xFF
         
         byte_arr = [data >> 24 & 0xFF, data >> 16 & 0xFF, data >> 8 & 0xFF, data & 0xFF]
         self._cks = (checksum == sum(byte_arr) & 0xFF)
