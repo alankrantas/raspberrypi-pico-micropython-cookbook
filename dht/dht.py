@@ -68,7 +68,6 @@ class DHT:
     def __init__(self, pin, model, statemachine=0):
         self._pin = Pin(pin)
         self._model = model if model in (DHT.DHT_11, DHT.DHT_22) else DHT.DHT_11
-        self._data = 0
         self._humid = 0
         self._temp = 0
         self._cks = False
