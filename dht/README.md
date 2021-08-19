@@ -22,12 +22,15 @@ It is recommended to wait 1 sec (DHT11) or 2 secs (DHT22) between two queries.
 ## Test Code
 
 ```python
+from dht import DHT, DHT11, DHT22
 import time
-from machine import Pin
-from dht import DHT11, DHT22
     
 dht = DHT11(28)
-# for DHT22, use dht = DHT22(28)
+# for DHT22, use
+#       dht = DHT22(28)
+# or
+#       dht = DHT(28, DHT.DHT_11)
+#       dht = DHT(28, DHT.DHT_22)
     
 while True:
     
@@ -35,7 +38,7 @@ while True:
     print('Humidity = {}%, temperature = {}C, checksum passed = {}'.format(
         dht.humidity(),
         dht.temperature(),
-        dht.successful()
+        dht.successful()  # if the checksum of last query indicates good data
     ))
     time.sleep(2)
 ```
