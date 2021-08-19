@@ -18,6 +18,7 @@ class DHT:
     
     model : int
         DHT model (DHT.DHT_11 or DHT.DHT_22)
+    
     statemachine : int
         State machine id (0~7)
     """
