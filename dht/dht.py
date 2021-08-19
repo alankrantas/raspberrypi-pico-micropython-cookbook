@@ -37,6 +37,7 @@ class DHT:
         based on https://www.i-programmer.info/programming/hardware/14572-the-pico-in-micropython-a-pio-driver-for-the-dht22.html?start=1
         """
         
+        set(pindirs, 1)
         set(pins, 1)
         pull(block)
         set(pins, 0)
@@ -64,7 +65,6 @@ class DHT:
         wait(0, pin, 0)
         jmp(y_dec, 'check')
         push(block)
-        set(pins, 1)
     
     def __init__(self, pin, model, statemachine=0):
         self._pin = pin
