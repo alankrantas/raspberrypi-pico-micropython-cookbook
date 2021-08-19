@@ -4,7 +4,7 @@ This driver is based on [Harry Fairhead & Mike James' DHT22 PIO code](https://ww
 
 The driver contains some test code as well (will not run as part of the driver). You can run it directly from your computer.
 
-In the Thonny IDE open **dht.py** and go to **File** -> **Save copy...** -> **Raspberry Pi Pico** (the device has to be connected first). Save the driver as **dht.py** in Pico.
+To use the driver, in the Thonny IDE open **dht.py** and go to **File** -> **Save copy...** -> **Raspberry Pi Pico** (the device has to be connected first). Save the driver as **dht.py** in Pico.
 
 ## Wiring Example
 
@@ -15,9 +15,7 @@ In the Thonny IDE open **dht.py** and go to **File** -> **Save copy...** -> **Ra
 * NC -> (not connected)
 * GND -> GND
 
-The 3-pin DHT11 and DHT22 models don't have NC pin and usually has built-in resistor to pull up the DATA pin.
-
-It is recommended to wait 1 sec (DHT11) or 2 secs (DHT22) between two queries.
+The 3-pin DHT11 and DHT22 modules don't have NC pin and usually has a built-in resistor to pull up the DATA pin.
 
 ## Test Code
 
@@ -42,3 +40,5 @@ while True:
     ))
     time.sleep(2)
 ```
+
+It is recommended to wait at least 1 sec (DHT11) or 2 secs (DHT22) between two queries.
