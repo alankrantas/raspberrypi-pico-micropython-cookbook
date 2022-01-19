@@ -76,4 +76,4 @@ If you are going to use this driver with other PIO drivers, you need to specify 
 neo = NeoPixel(28, n=12, brightness=0.3, autowrite=False, statemachine=1)
 ```
 
-Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7).
+Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7, default 0).
