@@ -53,4 +53,4 @@ If you are going to use this driver with other PIO drivers, you need to specify 
 dht = DHT11(28, statemachine=1)
 ```
 
-Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7).
+Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7, default 0).
