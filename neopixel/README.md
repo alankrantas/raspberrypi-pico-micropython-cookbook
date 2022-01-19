@@ -67,3 +67,13 @@ for _ in range(neo.n * 3):
 neo.clear()  # clear all colors (set to black)
 neo.show()
 ```
+
+## Setting State Machine
+
+If you are going to use this driver with other PIO drivers, you need to specify a state machine to avoid instruction conflict:
+
+```python
+neo = NeoPixel(28, n=12, brightness=0.3, autowrite=False, statemachine=1)
+```
+
+Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7).
