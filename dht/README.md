@@ -40,7 +40,7 @@ while True:
         dht.temperature(),
         dht.successful()  # if the checksum of last query indicates good data
     ))
-    time.sleep(2)
+    time.sleep(2)  # DHT11 should wait at least 1 sec between queries and DHT22 should wait 2 secs
 ```
 
 It is recommended to wait at least 1 sec (DHT11) or 2 secs (DHT22) between two queries.
