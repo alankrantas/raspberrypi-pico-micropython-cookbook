@@ -44,3 +44,13 @@ while True:
 ```
 
 It is recommended to wait at least 1 sec (DHT11) or 2 secs (DHT22) between two queries.
+
+## Setting State Machine
+
+If you are going to use this driver with other PIO drivers, you need to specify a state machine to avoid instruction conflict:
+
+```python
+dht = DHT11(28, statemachine=1)
+```
+
+Pico has 2 PIO blocks and each has 4 state machines (which runs the PIO instructions), make it total 8 (number 0~7).
