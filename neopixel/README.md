@@ -1,6 +1,6 @@
 ## NeoPixel (WS2812) PIO Driver
 
-This driver is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/tree/master/pio/neopixel_ring), repackaged into a class similar to CircuitPython's NeoPixel driver.
+This driver is based on [the official PIO example](https://github.com/raspberrypi/pico-micropython-examples/tree/master/pio/neopixel_ring), repackaged into a class similar to CircuitPython's NeoPixel driver. (Note: from v1.18 an official NeoPixel driver has beed added to the Pico firmware but it does not use PIO.)
 
 The driver contains some test code as well (will not run as part of the driver). You can run it directly from your computer.
 
@@ -66,6 +66,13 @@ for _ in range(neo.n * 3):
         
 neo.clear()  # clear all colors (set to black)
 neo.show()
+```
+
+This driver also supports slice:
+
+```python
+neo[2:5] = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]  # apply colors to NeoPixels no. 2 to 4
+neo[:] = [(255, 255, 255)] * neo.n  # apply a color to all NeoPixels, same as calling neo.fill()
 ```
 
 ## Setting State Machine
