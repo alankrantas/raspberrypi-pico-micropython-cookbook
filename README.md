@@ -33,18 +33,17 @@ import rp2
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
 def blink():
-    wrap_target()
     set(pins, 1)
-    set(x, 24)                [23]
-    label('high_loop')
-    nop()                     [19]
-    jmp(x_dec, 'high_loop')   [18]
+    set(x, 31)                  [6]
+    label('delay_high')
+    nop()                       [29]
+    jmp(x_dec, 'delay_high')
+
     set(pins, 0)
-    set(x, 24)                [23]
-    label('low_loop')
-    nop()                     [19]
-    jmp(x_dec, 'low_loop')    [18]
-    wrap()
+    set(x, 31)                  [6]
+    label('delay_low')
+    nop()                       [29]
+    jmp(x_dec, 'delay_low')
     
 sm = rp2.StateMachine(0, blink, freq=2000, set_base=Pin(25))
 sm.active(1)
@@ -52,7 +51,7 @@ sm.active(1)
 
 ## Overclocking
 
-The Pico has default frequency of 125 MHz but can be overclocked to **270 MHz** (which uses higher CPU voltage and might be less stable):
+The Pico has default frequency of 125 MHz but can be overclocked as high as **270 MHz** (which uses higher CPU voltage and might be less stable):
 
 ```python
 from machine import freq
@@ -60,7 +59,7 @@ from machine import freq
 freq(270000000)
 ```
 
-Remember to reset the frequency back to 125000000.
+Remember to reset the frequency back to 125000000. (Note: firmware v1.18 seems fixed this problem.)
 
 ## NeoPIxel (WS2812) PIO Driver
 
