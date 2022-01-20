@@ -11,7 +11,7 @@ To use the driver, in the Thonny IDE open **dht.py** and go to **File** -> **Sav
 ![Untitled Sketch_bb](https://user-images.githubusercontent.com/44191076/129920511-e2e7ba2d-118a-428d-9d83-16fe1435604f.png)
 
 * VCC -> 3.3V or 5V
-* DATA/OUT -> GPIO 28 (Pin 34), has to be pulled up
+* DATA/OUT -> GPIO 28 (Pin 34), has to be pulled up with a 10 KΩ resistor, unless you are using the 3-pin PCB module
 * NC -> (not connected)
 * GND -> GND
 
@@ -29,8 +29,8 @@ dht = DHT11(28)
 # for DHT22, use
 #       dht = DHT22(28)
 # or
-#       dht = DHT(28, DHT.DHT_11)
-#       dht = DHT(28, DHT.DHT_22)
+#       dht11 = DHT(28, DHT.DHT_11)
+#       dht22 = DHT(28, DHT.DHT_22)
     
 while True:
     
