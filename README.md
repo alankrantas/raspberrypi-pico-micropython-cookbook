@@ -13,7 +13,6 @@ led = Pin(25, Pin.OUT)
 while True:
     led.toggle()
     time.sleep(0.5)
-
 ```
 
 or
@@ -21,8 +20,24 @@ or
 ```python
 from machine import Pin, Timer
 
-Timer().init(mode=Timer.PERIODIC, period=500,
-             callback=lambda _: Pin(25, Pin.OUT).toggle())
+led = Pin(25, Pin.OUT)
+blink = lambda _: led.toggle()
+    
+Timer().init(mode=Timer.PERIODIC, period=500, callback=blink)
+```
+
+or
+
+```python
+from machine import Pin
+import uasyncio
+
+async def blink(led):
+    while True:
+        led.toggle()
+        await uasyncio.sleep_ms(500)
+
+uasyncio.run(blink(Pin(25, Pin.OUT)))
 ```
 
 or
