@@ -1,4 +1,4 @@
-import urandom, utime, gc
+import random, time, gc
 from _thread import allocate_lock, start_new_thread, exit
 from machine import Pin, I2C, freq
 from micropython import const
@@ -20,7 +20,7 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
+board  = [0 if random.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
 buffer = []
 task   = []
 gen    = 0
@@ -69,11 +69,11 @@ while True:
     gen += 1
     print('Gen {}: {} cell(s) (board = {} ms, draw = {} ms)'.format(gen, sum(board), t2, t1))
     
-    start = utime.ticks_ms()
+    start = time.ticks_ms()
     display_board()
-    t1 = utime.ticks_diff(utime.ticks_ms(), start)
+    t1 = time.ticks_diff(time.ticks_ms(), start)
     
-    start = utime.ticks_ms()
+    start = time.ticks_ms()
     task = list(range(TOTAL))
     buffer = [0] * TOTAL
     start_new_thread(calculate_cells, (True, ))
@@ -81,4 +81,4 @@ while True:
     while task:
         pass
     board = buffer
-    t2 = utime.ticks_diff(utime.ticks_ms(), start)
+    t2 = time.ticks_diff(time.ticks_ms(), start)
