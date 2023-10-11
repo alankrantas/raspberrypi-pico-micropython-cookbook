@@ -1,4 +1,4 @@
-import urandom, utime, gc
+import random, time, gc
 from machine import Pin, I2C, freq
 from micropython import const
 from ssd1306 import SSD1306_I2C  # https://github.com/stlehmann/micropython-ssd1306
@@ -19,7 +19,7 @@ SDA_PIN  = const(26)
 X      = WIDTH // DOT_SIZE
 Y      = HEIGHT // DOT_SIZE
 TOTAL  = X * Y
-board  = [0 if urandom.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
+board  = [0 if random.randint(0, (100 // RAND_PCT) - 1) else 1 for _ in range(TOTAL)]
 gen    = 0
 
 i2c = I2C(1, scl=Pin(SCL_PIN), sda=Pin(SDA_PIN), freq=400000)
@@ -59,10 +59,10 @@ while True:
     gen += 1
     print('Gen {}: {} cell(s) (board = {} ms, draw = {} ms)'.format(gen, sum(board), t2, t1))
     
-    start = utime.ticks_ms()
+    start = time.ticks_ms()
     display_board()
-    t1 = utime.ticks_diff(utime.ticks_ms(), start)
+    t1 = time.ticks_diff(time.ticks_ms(), start)
     
-    start = utime.ticks_ms()
+    start = time.ticks_ms()
     calculate_next_gen()
-    t2 = utime.ticks_diff(utime.ticks_ms(), start)
+    t2 = time.ticks_diff(time.ticks_ms(), start)
